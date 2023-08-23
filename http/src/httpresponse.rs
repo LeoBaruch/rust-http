@@ -25,13 +25,14 @@ impl<'a> Default for HttpResponse<'a> {
 impl<'a> From<HttpResponse<'a>> for String {
     fn from(res: HttpResponse) -> String {
         let res1: HttpResponse = res.clone();
+
         format!(
             "{} {} {}\r\n{}Content-Length: {}\r\n\r\n{}",
             &res1.version(),
             &res1.status_code(),
             &res1.status_text(),
             &res1.headers(),
-            &res.body.unwrap().len(),
+            &res.body().len(),
             &res1.body(),
         )
     }

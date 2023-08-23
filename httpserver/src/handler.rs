@@ -45,7 +45,11 @@ impl Handler for WebServiceHandler {
             headers.insert("Content-Type", "application/json");
             HttpResponse::new("200", Some(headers), body)
         } else {
-            HttpResponse::new("404", None, Self::load_file("404.html"))
+            let mut headers = HashMap::new();
+            headers.insert("Content-Type", "application/json");
+            headers.insert("Content-Type", "text/html");
+
+            HttpResponse::new("404", Some(headers), Some("NOT FOUND!".to_string()))
         }
     }
 }
