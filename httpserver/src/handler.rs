@@ -49,7 +49,9 @@ impl Handler for WebServiceHandler {
             headers.insert("Content-Type", "application/json");
             headers.insert("Content-Type", "text/html");
 
-            HttpResponse::new("404", Some(headers), Some("NOT FOUND!".to_string()))
+            let body = Self::load_file("404.html");
+
+            HttpResponse::new("404", Some(headers), body)
         }
     }
 }
