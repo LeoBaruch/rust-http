@@ -1,4 +1,4 @@
-use crate::handler::Handler;
+use crate::handler::{Handler, PageNotFoundHandler, StaticPageHandler};
 use http::{httprequest, httprequest::HttpRequest};
 use std::net::TcpStream;
 
@@ -20,13 +20,16 @@ impl Router {
                             let _ = resp.send_response(stream);
                         }
                         _ => {
-                            println!("TODO")
+                            let resp = StaticPageHandler::handler(&req);
+
+                            let _ = resp.send_response(stream);
                         }
                     }
                 }
             },
-            s => {
-                println!("{:?},not implemented", s);
+            _ => {
+                let resp = PageNotFoundHandler::handler(&req);
+                let _ = resp.send_response(stream);
             }
         }
     }

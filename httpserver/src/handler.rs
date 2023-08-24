@@ -13,7 +13,45 @@ pub trait Handler {
     }
 }
 
+pub struct StaticPageHandler;
 pub struct WebServiceHandler;
+
+pub struct PageNotFoundHandler;
+
+impl Handler for PageNotFoundHandler {
+    fn handler(_req: &HttpRequest) -> HttpResponse {
+        HttpResponse::new("404", None, Self::load_file("404.html"))
+    }
+}
+
+impl Handler for StaticPageHandler {
+    fn handler(req: &HttpRequest) -> HttpResponse {
+        let httprequest::Resoure::Path(s) = &req.resource;
+
+        let route: Vec<_> = s.split("/").collect();
+
+        match route[1] {
+            "" => HttpResponse::new("200", None, Self::load_file("index.html")),
+            "health" => HttpResponse::new("200", None, Self::load_file("health.html")),
+            path => match Self::load_file(path) {
+                Some(contents) => {
+                    let mut header = HashMap::new();
+
+                    if path.ends_with(".css") {
+                        header.insert("Content-Type", "text/css");
+                    } else if path.ends_with(".js") {
+                        header.insert("Content-Type", "text/js");
+                    } else {
+                        header.insert("Content-Type", "text/html");
+                    }
+
+                    HttpResponse::new("200", Some(header), Self::load_file(&contents))
+                }
+                None => HttpResponse::new("404", None, Self::load_file("404.html")),
+            },
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct OrderStatus {
@@ -45,13 +83,9 @@ impl Handler for WebServiceHandler {
             headers.insert("Content-Type", "application/json");
             HttpResponse::new("200", Some(headers), body)
         } else {
-            let mut headers = HashMap::new();
-            headers.insert("Content-Type", "application/json");
-            headers.insert("Content-Type", "text/html");
-
             let body = Self::load_file("404.html");
 
-            HttpResponse::new("404", Some(headers), body)
+            HttpResponse::new("404", None, body)
         }
     }
 }
