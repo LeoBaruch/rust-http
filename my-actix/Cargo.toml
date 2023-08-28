@@ -1,0 +1,15 @@
+[package]
+name = "my-actix-web"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4"
+actix-rt = "2.9.0"
+serde = { version = "1.0.188", features = ["derive"] }
+chrono = { version = "0.4.26", features = ["serde"] }
+
+[[bin]]
+name = "server1"
