@@ -34,3 +34,31 @@ pub async fn new_course(
 
   HttpResponse::Ok().body("Course added.")
 }
+
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use actix_web::{http::StatusCode, App};
+  use std::sync::Mutex;
+
+  #[actix_rt::test]
+  async fn new_course_test() {
+    let course = web::Json(Course {
+      teacher_id: 1,
+      id: None,
+      name: "Math".to_string(),
+      time: None,
+    });
+
+    let app_state = web::Data::new(AppState {
+      visit_count: Mutex::new(0),
+      health_check_response: "I'm OK.".to_string(),
+      courses: Mutex::new(vec![]),
+    });
+
+    let resq = new_course(app_state, course).await;
+
+    assert_eq!(resq.status(), StatusCode::OK);
+  }
+}
