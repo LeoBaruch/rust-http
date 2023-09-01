@@ -10,19 +10,23 @@ mod state;
 mod router;
 #[path = "../handlers.rs"]
 mod handlers;
+#[path = "../models.rs"]
+mod models;
 
 use state::AppState;
-use router::{ general_routes};
+use router::{ general_routes, course_routes};
 
 #[actix_web::main] 
 async fn main() -> Result<()> {
     let shared_data = web::Data::new(AppState {
         health_check_response: "I'm OK.".to_string(),
         visit_count: Mutex::new(0),
+        courses: Mutex::new(vec![]),
     });
     let app = move || {
         App::new()
             .app_data(shared_data.clone())
+            .configure(course_routes)
             .configure(general_routes)
     };
 
