@@ -35,6 +35,20 @@ pub async fn new_course(
   HttpResponse::Ok().body("Course added.")
 }
 
+pub async fn get_course_with_id(
+  state: web::Data<AppState>,
+  path: web::Path<u32>
+) -> HttpResponse {
+  let courses = state.courses.lock().unwrap();
+  let course: Vec<&Course>= courses.iter().filter(|c| c.teacher_id == path.0).collect();
+
+  if course.len() > 0 {
+    return HttpResponse::Ok().json(course);
+  }
+
+  HttpResponse::Ok().json("no course found.".to_string())
+}
+
 
 #[cfg(test)]
 mod tests {
