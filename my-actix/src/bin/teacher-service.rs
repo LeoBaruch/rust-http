@@ -1,22 +1,19 @@
-use std::{
-  io::Result, 
-  sync::Mutex
-};
 use actix_web::{web, App, HttpServer};
+use std::{io::Result, sync::Mutex};
 
-#[path = "../state.rs"]
-mod state;
-#[path = "../router.rs"]
-mod router;
 #[path = "../handlers.rs"]
 mod handlers;
 #[path = "../models.rs"]
 mod models;
+#[path = "../router.rs"]
+mod router;
+#[path = "../state.rs"]
+mod state;
 
+use router::{course_routes, general_routes};
 use state::AppState;
-use router::{ general_routes, course_routes};
 
-#[actix_web::main] 
+#[actix_web::main]
 async fn main() -> Result<()> {
     let shared_data = web::Data::new(AppState {
         health_check_response: "I'm OK.".to_string(),
